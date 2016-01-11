@@ -65,7 +65,7 @@ into another system. Available transformations are:
 | ECL2GAL  | ecliptic | galactic |
 +----------+----------+----------+
  
- Transformations are based on
+Transformations are based on
      Hipparcos Explanatory Vol 1 section 1.5
      Murray, 1983, section 10.2
      van Altena et al. 2012, Chapter 4.5 of "Astrometry for Astrophysics"
@@ -113,12 +113,16 @@ requires `mpl_toolkits.basemap`
 Examples
 --------
 
+Sample catalog file is included in the repository
+
 .. code::
 
 	> ./radec_density -i sample.cat -o sample_icrs.hist --dra 1 --ddec 1
 	> ./plot.py sample_icrs.hist --title icrs -o sample_icrs.png
 
 .. image:: sample_icrs.png
+
+
 
 .. code::
 	> ./radec_density -i sample.cat -o sample_gal.hist --dra 1 --ddec 1 -t ICRS2GAL
