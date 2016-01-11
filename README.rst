@@ -51,12 +51,17 @@ into another system. Available transformations are:
 
 +----------+----------+----------+
 |  name    |   from   |    to    |
-+----------+----------+----------+
++==========+==========+==========+
 | GAL2ICRS | galactic | ICRS     |
-| ICRS2GAL | ICRS     | galactic | 
++----------+----------+----------+
+| ICRS2GAL | ICRS     | galactic |
++----------+----------+----------+ 
 | ECL2ICRS | ecliptic | ICRS     |
++----------+----------+----------+
 | ICRS2ECL | ICRS     | ecliptic |
++----------+----------+----------+
 | GAL2ECL  | galactic | ecliptic |
++----------+----------+----------+
 | ECL2GAL  | ecliptic | galactic |
 +----------+----------+----------+
  
@@ -65,18 +70,18 @@ into another system. Available transformations are:
      Murray, 1983, section 10.2
      van Altena et al. 2012, Chapter 4.5 of "Astrometry for Astrophysics"
  
- Galactic pole coordinates are based on J2000 values.
+Galactic pole coordinates are based on J2000 values.
 
 
 Output file
 ~~~~~~~~~~~
  
- The output file of the code is a plain Ascii array (image) 
+The output file of the code is a plain Ascii array (image) 
 
- the axis ranges span the all-sky 
-    x := [-180, 180] and y:= [-90, 90]
- with angular pixel sizes given by 
-   dx := 360. / float(nx) and  dy := 180. / float(ny)
+the axis ranges span the all-sky 
+	x := [-180, 180] and y:= [-90, 90]
+with angular pixel sizes given by 
+	dx := 360. / float(nx) and  dy := 180. / float(ny)
 
 The plotting code (`plot.py`) knows already what to do with it.
 
@@ -119,4 +124,4 @@ Examples
 	> ./radec_density -i sample.cat -o sample_gal.hist --dra 1 --ddec 1 -t ICRS2GAL
 	> ./plot.py sample_gal.hist --title galactic -o sample_gal.png
 
-.. image:: sample_png.png
+.. image:: sample_gal.png
