@@ -96,16 +96,13 @@ requires `mpl_toolkits.basemap`
 
 	> ./plot.py -h
 
-	Usage: plot.py [options]
-
-	Options:
-	  -h, --help            show this help message and exit
-	  --title=TITLE         Figure title
-	  -o FIGOUT, --output=FIGOUT
-				export figures using this suffixe
-	  -q, --quiet           set to skip showing the figures
-	  --projection=PROJECTION
-				MAP Coordinate projection base
+-h, --help            show this help message and exit
+--title=TITLE         Figure title
+-o FIGOUT, --output=FIGOUT
+		export figures using this suffixe
+-q, --quiet           set to skip showing the figures
+--projection=PROJECTION
+			MAP Coordinate projection base
 
 
 Examples
@@ -121,6 +118,8 @@ Sample catalog file is included in the repository
 	> ./plot.py sample_gal.hist --title galactic -o sample_gal.png
 
 .. image:: sample_icrs.png
+	:width: 40pt
 
 
 .. image:: sample_gal.png
+	:width: 40pt
