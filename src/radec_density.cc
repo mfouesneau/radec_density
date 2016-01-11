@@ -110,15 +110,15 @@ Histogram2d make_density_map(std::string fname,
         for(size_t lineno=1; ++data; ++lineno, ++pb){
             ra = data.next_as<double>();
             dec = data.next_as<double>();
+            if (radians){
+                ra  = coordinates::degrees(ra);
+                dec = coordinates::degrees(dec);
+            }
             if (coord_transformation){
                 std::valarray<double> r = coordinates::apply_transformation(
                         transform, ra, dec, true); // true = use_degrees
                 ra = r[0];
                 dec = r[1];
-            }
-            if (radians){
-                ra  = coordinates::degrees(ra);
-                dec = coordinates::degrees(dec);
             }
             if (ra > 180) ra -= 360;
             H.add_value(ra, dec);
@@ -131,15 +131,15 @@ Histogram2d make_density_map(std::string fname,
             ra = data.next_as<double>();
             dec = data.next_as<double>();
             w = data.next_as<double>();
+            if (radians){
+                ra  = coordinates::degrees(ra);
+                dec = coordinates::degrees(dec);
+            }
             if (coord_transformation){
                 std::valarray<double> r = coordinates::apply_transformation(
                         transform, ra, dec, true); // true = use_degrees
                 ra = r[0];
                 dec = r[1];
-            }
-            if (radians){
-                ra  = coordinates::degrees(ra);
-                dec = coordinates::degrees(dec);
             }
             if (ra > 180) ra -= 360;
             H.add_value(ra, dec, w);
