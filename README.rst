@@ -30,10 +30,10 @@ to compile the code, run: `> make`
 -i, --input         input data file
 -o, --output        output histogram to file
 -c, --columns       column indexes to use (RA, DEC [,Weight]) (starts at 0)
-    --dra           RA bin width in degrees
-    --ddec          RA bin width in degrees
+--dra           RA bin width in degrees
+--ddec          RA bin width in degrees
 -t, --transform     coordinate transformation
-    --comment       comment line character in input file
+--comment       comment line character in input file
 -d, --delim         delimiter character in input file
 -r, --radians       set if input ra,dec are in radians
 
