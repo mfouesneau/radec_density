@@ -3,6 +3,8 @@ All-sky density mapping
 
 This library implements a all-sky density map builder (C++) and plotter (Python).
 
+:author: M. Fouesneau
+
 
 Density mapper: `radec_density` 
 -------------------------------
