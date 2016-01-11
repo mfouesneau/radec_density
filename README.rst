@@ -119,13 +119,10 @@ Sample catalog file is included in the repository
 
 	> ./radec_density -i sample.cat -o sample_icrs.hist --dra 1 --ddec 1
 	> ./plot.py sample_icrs.hist --title icrs -o sample_icrs.png
+	> ./radec_density -i sample.cat -o sample_gal.hist --dra 1 --ddec 1 -t ICRS2GAL
+	> ./plot.py sample_gal.hist --title galactic -o sample_gal.png
 
 .. image:: sample_icrs.png
 
-
-
-.. code::
-	> ./radec_density -i sample.cat -o sample_gal.hist --dra 1 --ddec 1 -t ICRS2GAL
-	> ./plot.py sample_gal.hist --title galactic -o sample_gal.png
 
 .. image:: sample_gal.png
