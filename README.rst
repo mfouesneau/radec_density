@@ -26,19 +26,16 @@ to compile the code, run: `> make`
 
 	> ./radec_density -h
 
-	Usage:
-	  ./radec_density [OPTION...] 
-
-	  -h, --help          Display help message
-	  -i, --input         input data file
-	  -o, --output        output histogram to file
-	  -c, --columns       column indexes to use (RA, DEC [,Weight]) (starts at 0)
-	      --dra           RA bin width in degrees
-	      --ddec          RA bin width in degrees
-	  -t, --transform     coordinate transformation
-	      --comment       comment line character in input file
-	  -d, --delim         delimiter character in input file
-	  -r, --radians       set if input ra,dec are in radians
+-h, --help          Display help message
+-i, --input         input data file
+-o, --output        output histogram to file
+-c, --columns       column indexes to use (RA, DEC [,Weight]) (starts at 0)
+    --dra           RA bin width in degrees
+    --ddec          RA bin width in degrees
+-t, --transform     coordinate transformation
+    --comment       comment line character in input file
+-d, --delim         delimiter character in input file
+-r, --radians       set if input ra,dec are in radians
 
 
 Available transformations
