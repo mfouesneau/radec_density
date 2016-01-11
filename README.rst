@@ -100,6 +100,7 @@ requires `mpl_toolkits.basemap`
 -q, --quiet           set to skip showing the figures
 --projection=PROJECTION
 			MAP Coordinate projection base
+--log                 Set to log-scale the density
 
 
 Examples

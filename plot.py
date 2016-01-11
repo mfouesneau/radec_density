@@ -14,6 +14,8 @@ if __name__ == "__main__":
                                default=True, help="set to skip showing the figures")),
         ("--projection", dict(dest="projection", default='hammer', type='str',
                               help="MAP Coordinate projection base")),
+        ("--log", dict(dest="logscale", action="store_true", default=False,
+                       help="Set to log-scale the density")),
     )
 
     from optparse import OptionParser
@@ -26,6 +28,7 @@ if __name__ == "__main__":
     output = options.__dict__.pop('figout')
     title = options.__dict__.pop('title')
     projection = options.__dict__.pop('projection')
+    logscale = options.__dict__.pop('logscale')
 
     if len(args) >= 1:
         infile = args[0]
@@ -273,18 +276,18 @@ if __name__ == "__main__":
     plt.ioff()
     # plot in mollweide projections
     m = get_radec_basemap(projection)
-    # from matplotlib.colors import LogNorm
-    # r = plot_ra_dec_histogram2d(density + 0.1, ra_bins, dec_bins, basemap=m,
-    #                             norm=LogNorm(vmin=1e-3, vmax=density.max())
-    #                             )
-    r = plot_ra_dec_histogram2d(density, ra_bins, dec_bins, basemap=m)
-    # ra, dec = plot.galactic_plane_RADEC()
-    # mra, mdec = m(ra, dec)
-    # plt.plot(mra, mdec, 'k-', lw=2)
+    if (logscale is True):
+        from matplotlib.colors import LogNorm
+        r = plot_ra_dec_histogram2d(density + 0.1, ra_bins, dec_bins, basemap=m,
+                                    norm=LogNorm(vmin=5e-1, vmax=density.max())
+                                    )
+    else:
+        r = plot_ra_dec_histogram2d(density, ra_bins, dec_bins, basemap=m)
     # add colorbar
     cb = plt.colorbar(r, orientation='horizontal', shrink=0.6)
     cb.set_label('number counts')
-    set_colorbar_MaxNLocator(cb, 5)
+    if (not logscale):
+        set_colorbar_MaxNLocator(cb, 5)
 
     if title is not None:
         plt.title(title)
