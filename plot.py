@@ -141,7 +141,7 @@ rcParams['text.latex.preamble'] = [r'\usepackage{amsmath}']
 rcParams['font.size'] = 14
 
 
-def get_radec_basemap(projection='moll', resolution='c', lon_0=0, **kwargs):
+def get_radec_basemap(projection='moll', resolution='c', lat_0=0., lon_0=0, **kwargs):
     """ Generate a Basemap for angular plot
 
     Parameters
@@ -165,7 +165,7 @@ def get_radec_basemap(projection='moll', resolution='c', lon_0=0, **kwargs):
     """
     # generate the basemap for the plot
     m = Basemap(projection=projection,
-                lon_0=lon_0,
+                lon_0=lon_0, lat_0=lat_0,
                 resolution=resolution, **kwargs)
 
     m.drawmapboundary(fill_color='white')
