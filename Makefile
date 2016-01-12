@@ -1,18 +1,22 @@
 SRCDIR = ./src
-OBJDIR = ./obj
+OBJDIR = ./build
 CXXFLAGS = -I${SRCDIR} -std=c++11 -O3 -Wall -Wextra -pedantic -DNDEBUG
 CPP_FILES := $(wildcard $(SRCDIR)/*.cc)
 OBJ_FILES := $(addprefix ${OBJDIR}/,$(notdir $(CPP_FILES:.cc=.o)))
+TARGETS = radec_density
 
-all: radec_density
+all: ${TARGETS}
 
-obj/%.o: ${SRCDIR}/%.cc
-	   g++ $(CXXFLAGS) -c -o $@ $<
+
+build/%.o: ${SRCDIR}/%.cc
+	@mkdir -p $(@D)
+	g++ $(CXXFLAGS) -c -o $@ $<
 
 radec_density: $(OBJ_FILES)
-	g++ $(CXXFLAGS) -o $@ $^\
+	g++ $(CXXFLAGS) -o $@ $^
 
 clean:
-	rm -f radec_density
-	rm -f ${OBJDIR}/*.o
+	rm -f ${TARGETS}
+	rm -rf ${OBJDIR}
+
 
