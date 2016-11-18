@@ -444,6 +444,161 @@ namespace coordinates {
 				);
 	
 	}
+
+	/**
+	 * Return the matrix of precession between two epochs (IAU 1976, FK5).
+	 *
+	 * Though the matrix method itself is rigorous, the precession
+	 * angles are expressed through canonical polynomials which are
+	 * valid only for a limited time span.  There are also known
+	 * errors in the IAU precession rate.  
+	 * The absolute accuracy of the present formulation is 
+	 * better than 0.1 arcsec from 1960AD to 2040AD, 
+	 * better than 1 arcsec from 1640AD to 2360AD,
+	 * and remains below 3 arcsec for the whole of the period 500BC to 3000AD. 
+	 * 
+	 * The errors exceed 10 arcsec outside the range 1200BC to 3900AD, exceed
+	 * 100 arcsec outside 4200BC to 5600AD and exceed 1000 arcsec outside 6800BC
+	 * to 8200AD. 
+ 	 *
+	 * References:
+	 *  Lieske,J.H., 1979. Astron.Astrophys.,73,282. equations (6) & (7), p283.
+	 *  Kaplan,G.H., 1981. USNO circular no. 163, pA2.
+	 *  
+	 * @param begEpoch beginning Julian epoch (e.g. 2000 for J2000)
+	 * @param endEpoch ending Julian epoch
+	 * @return 
+	 * @return the precession matrix as a 3x3 matrix, 
+	 *              where pos(endEpoch) = rotMat * pos(begEpoch)
+	 */
+    valarray2d get_FK5PrecessMatrix(double begEpoch, double endEpoch){
+
+	    // Interval between basic epoch J2000.0 and beginning epoch (JC)
+	    double t0 = (begEpoch - 2000.0) / 100.0;                  // origin J2000
+
+	    // Interval over which precession required (JC)
+	    double dt = (endEpoch - begEpoch) / 100.0;               // centuries
+
+	    // Euler angles
+	    double RadPerDeg  = PI / 180.0;                          // radians per degree
+	    double ArcSecPerDeg = 60.0 * 60.0;                       // arcseconds per degree
+	    double RadPerArcSec = RadPerDeg / ArcSecPerDeg;          // radians per arcsec
+	    double tas2r = dt * RadPerArcSec;
+	    double w = 2306.2181 + (1.39656 - 0.000139 * t0) * t0;   // arcsec
+
+	    double zeta = (w + ((0.30188 - 0.000344 * t0) + 0.017998 * dt) * dt) * tas2r;
+	    double z = (w + ((1.09468 + 0.000066 * t0) + 0.018203 * dt) * dt) * tas2r;
+	    double theta = ((2004.3109 + ( - 0.85330 - 0.000217 * t0) * t0)
+	                    + (( - 0.42665 - 0.000217 * t0) - 0.041833 * dt) * dt) * tas2r;
+	    
+	    // Rotation matrix
+	    valarray2d mat = dot(dot(elementaryRotationMatrix("z", z), 
+	                             elementaryRotationMatrix("y", theta)), 
+	                         elementaryRotationMatrix("z", zeta));
+	    return mat;
+	}
+
+    /**
+	 * Apply precession and proper motion of stars.
+	 * 
+	 *  References:
+	 *  "The Astronomical Almanac" for 1987, page B39
+	 *  P.T. Wallace's prec routine
+	 *  
+	 * @param pos initial mean FK5 cartesian position (au)
+	 * @param pm  initial mean FK5 cartesian velocity (au per Jul. year) 
+	 * @param fromDate date of initial coordinates (Julian epoch)
+	 * @param toDate   date to which to precess (Julian epoch)
+	 * @return ( final mean FK5 cartesian position (au)
+	 *           final mean FK5 cartesian velocity (au per Julian year)
+	 *           )
+	 */
+	valarray2d fk5xyz_applyPrecession(std::valarray<double>& pos, std::valarray<double>& pm, 
+            double fromDate, double toDate){
+        
+	    // compute new precession constants
+	    valarray2d rotMat = get_FK5PrecessMatrix(fromDate, toDate);
+	    // correct for velocity (proper motion and radial velocity)
+        std::valarray<double> tempP(3);
+
+	    double dt = toDate - fromDate;
+	    for (size_t k=0; k < 3; ++k){
+	    	tempP[k] = pos[k] + pm[k] * dt;
+	    }
+
+	    // precess positions and velocity
+        std::valarray<double> newpos = dot(rotMat, tempP);
+        std::valarray<double> newpm = dot(rotMat, pm);
+        valarray2d res = {newpos, newpm};
+	    return res;
+	}
+
+    /**
+	 * Apply precession and proper motion of stars
+	 * 
+	 *  References:
+	 *  "The Astronomical Almanac" for 1987, page B39
+	 *  P.T. Wallace's prec routine
+	 * 
+	 * @param phi first coordinate in radians (or degrees if use_degrees)
+	 * @param theta coordinate in radians (or degrees if use_degrees)
+	 * @param use_degrees  if set, takes input angles in degrees and produces outputs also in degrees
+	 * @return (a,b)  transformed coordinates in radians (or degrees if use_degrees)
+	 * @throws Exception Something went wrong in the spherical transformation
+	 */
+    valarray3d apply_precession(std::valarray<double>& phi, std::valarray<double>& theta, 
+            std::valarray<double>& muphi, std::valarray<double>& mutheta, 
+			double fromDate, double toDate,
+			bool use_degrees){
+
+        valarray2d newpos = valarray2d(std::valarray<double>(2), phi.size());
+        valarray2d newvel = valarray2d(std::valarray<double>(2), phi.size());
+		double r = 1.;
+        std::valarray<double> xyz;
+		std::valarray<double> vxyz;
+		std::valarray<double> xyzrot;
+		std::valarray<double> vxyzrot;
+		std::valarray<double> rab;
+		std::valarray<double> vab;
+
+		// compute new precession constants
+		valarray2d rotMat = get_FK5PrecessMatrix(fromDate, toDate);
+		double dt = toDate - fromDate;
+        std::valarray<double> tempP(3);
+
+		for (size_t k=0; k<phi.size(); ++k){
+			if (use_degrees){
+				xyz = sphericalToCartesian(r, radians(phi[k]), radians(theta[k]));
+				vxyz = sphericalToCartesian(r, radians(muphi[k]), radians(mutheta[k]));
+			} else {
+				xyz = sphericalToCartesian(r, phi[k], theta[k]);
+				vxyz = sphericalToCartesian(r, muphi[k], mutheta[k]);
+			}
+			// correct for velocity (proper motion and radial velocity)
+			for (size_t j=0; j < 3; ++j){
+				tempP[j] = xyz[j] + vxyz[j] * dt;
+			}
+			// precess position and velocity
+			xyzrot = dot(rotMat, tempP);
+			vxyzrot = dot(rotMat, vxyz);
+
+			rab = cartesianToSpherical(xyzrot[0], xyzrot[1], xyzrot[2]);
+			vab = cartesianToSpherical(vxyzrot[0], vxyzrot[1], vxyzrot[2]);
+			if (use_degrees){
+				newpos[k][0] = degrees(rab[1]);
+				newpos[k][1] = degrees(rab[2]);
+				newvel[k][0] = degrees(vab[1]);
+				newvel[k][1] = degrees(vab[2]);
+			} else {
+				newpos[k][0] = rab[1];
+				newpos[k][1] = rab[2];
+				newvel[k][1] = vab[1];
+				newvel[k][1] = vab[2];
+			}
+		}
+		valarray3d res = {newpos, newvel};
+		return res;
+	}
 } // end of namespace coordinates
 
 
